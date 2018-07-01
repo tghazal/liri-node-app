@@ -7,6 +7,11 @@ var keys=require("./keys");
 
 
 
+
+
+
+
+//if the user input my-tweets 
 if(process.argv[2]==="my-tweets")
 {
   var client = new Twitter({
@@ -17,16 +22,18 @@ if(process.argv[2]==="my-tweets")
   });
   var params = {
     q: 'from:name ',
-    count: 5,
+    count: 20,
     result_type: 'recent',
     lang: 'en'
   }
 
 client.get('statuses/user_timeline', params, function(error, tweets, response) {
   if (!error) {
-    for(var i=0;i<5;i++){
-    console.log(tweets[i].text);
-    console.log(tweets[i].created_at);
+    for(var i=0;i<20;i++){
+    console.log("Tweet Number "+(i+1) +" is: " )
+    console.log("TWEET -- "+ tweets[i].text);
+    console.log("DATE -- "+ tweets[i].created_at);
+    console.log(".............................")
   }
 
   }
@@ -37,7 +44,15 @@ client.get('statuses/user_timeline', params, function(error, tweets, response) {
 
 if(process.argv[2]==="spotify-this-song")
 {
-var song=process.argv[3];
+ 
+  var  song = process.argv.slice(3).join(" ");
+
+if (!song)
+{
+  song="The sign";
+}
+console.log(song)
+
   var spotify = new Spotify({
     id: keys.spotify.id,
     secret: keys.spotify.secret
@@ -48,11 +63,11 @@ var song=process.argv[3];
       return console.log('Error occurred: ' + err);
     }
    
- console.log("artist: "+ data.tracks.items[0].artists[0].name); 
- console.log("url: "+ data.tracks.items[0].external_urls.spotify)
- console.log("song name: "+data.tracks.items[0].name)
- console.log("album: "+data.tracks.items[0].album.name)
- console.log(JSON.parse(data))
+ console.log("\nArtist: "+ data.tracks.items[0].artists[0].name +"\n"); 
+ console.log("Url: "+ data.tracks.items[0].external_urls.spotify+"\n")
+ console.log("Song Name: "+data.tracks.items[0].name+"\n")
+ console.log("Album: "+data.tracks.items[0].album.name+"\n")
+
   });
 
 
@@ -61,31 +76,42 @@ var song=process.argv[3];
 
 if(process.argv[2]==="movie-this")
 {
-var movieName=process.argv[3];
+
+ var  movieName = process.argv.slice(3).join(" ");
+
+if (!movieName)
+{
+   movieName="Mr. Nobody";
+}
+
+
 request("http://www.omdbapi.com/?t="+movieName+"&y=&plot=short&apikey=trilogy", function(error, response, body) {
 
   // If the request is successful (i.e. if the response status code is 200)
   if (!error && response.statusCode === 200) {
 
-    // Parse the body of the site and recover just the imdbRating
-    // (Note: The syntax below for parsing isn't obvious. Just spend a few moments dissecting it).
+    // Parse the body of the site and recover he data 
    
-    console.log("Title of the movie " + JSON.parse(body).Title);
-    console.log("Title of the movie " + JSON.parse(body).Year);
-     console.log("The movie's rating is: " + JSON.parse(body).imdbRating);
-     console.log("The movie's rating is: " + JSON.parse(body).Ratings[1].Value);
-     console.log("The Country: " + JSON.parse(body).Country);
-     console.log("The Language: " + JSON.parse(body).Language);
-     console.log("The Plot: " + JSON.parse(body).Plot);
-     console.log("The Actors: " + JSON.parse(body).Actors);
+    console.log("\nTITLE : " + JSON.parse(body).Title+"\n");
+    console.log("YEAR : " + JSON.parse(body).Year+"\n");
+     console.log("RATING : " + JSON.parse(body).imdbRating+"\n");
+     //serach for rotten tomatoes rating source throgh rating array 
+     for(var i =0;i<JSON.parse(body).Ratings.length;i++)
+     {
+       if( JSON.parse(body).Ratings[i].Source==="Rotten Tomatoes")
+       {
+        console.log("Rotten Tomatoes RATING is: " + JSON.parse(body).Ratings[i].Value+"\n");
+       }
+     }
      
+     console.log("COUNTRY :  " + JSON.parse(body).Country+"\n");
+     console.log("LANGUAGE : " + JSON.parse(body).Language+"\n");
+     console.log("PLOT : " + JSON.parse(body).Plot+"\n");
+     console.log("ACTOR :  " + JSON.parse(body).Actors+"\n");
      
-
-     
-   // console.log( JSON.parse(body))
   }
+  else console.log("error")
 });
-
 
 }
 
@@ -105,13 +131,12 @@ if(process.argv[2]==="do-what-it-says")
   
     // Then split it by commas (to make it more readable)
     var dataArr = data.split(",");
-  
+     var command=dataArr[0];
     // We will then re-display the content as an array for later use.
    
    
     var songs = data.split('"');
-    console.log(songs[1]);
-     var command=dataArr[0];
+    
     var song=songs[1];
  console.log("command is = " +command);
  console.log("song is : "+ song)
@@ -129,7 +154,7 @@ if(process.argv[2]==="do-what-it-says")
    console.log("url: "+ data.tracks.items[0].external_urls.spotify)
    console.log("song name: "+data.tracks.items[0].name)
    console.log("album: "+data.tracks.items[0].album.name)
-   console.log(JSON.parse(data))
+   
     });
   
   
